@@ -1,0 +1,21 @@
+setup:
+  addons:
+    - plan: heroku-postgresql
+      as: DATABASE
+  config:
+    POSTGRES_USER: camunda
+    POSTGRES_PASSWORD: 1511
+    POSTGRES_DB: camunda
+
+build:
+  docker:
+    web: Dockerfile
+  config:
+    SPRING_PROFILE: prod
+    SPRING_DATASOURCE_URL: jdbc:postgresql://camunda-db:5432/camunda
+    SPRING_DATASOURCE_USERNAME: camunda
+    SPRING_DATASOURCE_PASSWORD: 1511
+    SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    PORT: 8080
+    MAIL_USER: test@test.ru
+    MAIL_PASSWORD: 12
