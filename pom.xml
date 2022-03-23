@@ -12,7 +12,7 @@
 	<artifactId>kittyfacts</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>kittyfacts</name>
-	<description>Pomogaybio final project for Camunda course</description>
+	<description>Pomogaybo final project for Camunda course</description>
 	<properties>
 		<java.version>11</java.version>
 	</properties>
