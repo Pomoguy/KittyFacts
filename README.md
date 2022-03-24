@@ -1,1 +1,1 @@
-Postgres: sudo docker run --name camunda-postgres -p 5432:5432 -e POSTGRES_USER=camunda -e POSTGRES_PASSWORD=1511 -e POSTGRES_DB=camunda -d postgres:13.1-alpine
+Для запуска приложения, необходимо использовать docker compose up, предварительно заменив параметры MAIL_USER и MAIL_PASSWORD на свои.
