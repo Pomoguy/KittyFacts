@@ -1,0 +1,41 @@
+{
+	"info": {
+		"_postman_id": "4b1be4fa-33fa-4c88-b0b8-ea9337854c48",
+		"name": "KittyFact",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "ExecuteKittyFact",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"variables\": {\r\n    \"email\": {\"value\":\"YOUR_EMAIL\",\"type\":\"String\"}\r\n  }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/engine-rest/process-definition/key/KittyFact/start",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"engine-rest",
+						"process-definition",
+						"key",
+						"KittyFact",
+						"start"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
