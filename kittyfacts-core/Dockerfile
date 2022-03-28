@@ -1,5 +1,5 @@
 FROM maven:3.8-amazoncorretto-11 AS MAVEN_TOOL_CHAIN
-COPY pom.xml /tmp/
+COPY ../pom.xml /tmp/
 COPY src /tmp/src/
 WORKDIR /tmp/
 RUN mvn package

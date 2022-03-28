@@ -4,7 +4,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: kittyfacts-core/Dockerfile
     container_name: KittyFacts
     depends_on:
       - camunda-db
@@ -15,8 +15,8 @@ services:
       - SPRING_DATASOURCE_PASSWORD=1511
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
       - PORT=8080
-      - MAIL_USER=1111
-      - MAIL_PASSWORD=1111
+      - MAIL_USER=${MAIL_USER}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
 
   camunda-db:
     image: 'postgres:13.1-alpine'
