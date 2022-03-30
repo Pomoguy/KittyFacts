@@ -2,7 +2,7 @@
 <html lang="en" xmlns:c="http://www.w3.org/1999/XSL/Transform">
 <head>
     <meta charset="UTF-8">
-    <title>Kitty Fact Front</title>
+    <title>Kitty Fact</title>
     <link rel="stylesheet" href="/static/style.css">
     <meta name="viewport"
           content="width=device-width, initial-scale=1, shrink-to-fit=no"> <#-- выравниваем экран для разных устройств -->

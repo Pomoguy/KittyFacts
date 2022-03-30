@@ -73,7 +73,7 @@ public class KittyfactsApplicationTests {
 
         assertThat(pi).isNotNull();
         assertThat(pi).hasVariables("email");
-        assertThat(pi).isWaitingAt("Event_For_Unit_Tests");
+        assertThat(pi).isWaitingAt("StartEvent_1");
         execute(job());
         assertThat(pi).hasPassed("GetCatFactDelegate");
         assertThat(pi).hasPassed("GetPictureDelegate");
