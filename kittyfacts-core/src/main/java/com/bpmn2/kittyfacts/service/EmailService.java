@@ -24,7 +24,7 @@ public class EmailService {
     private String from;
 
 
-    public void sendEmail(String email, String content) throws MessagingException, IOException, TemplateException {
+    public void sendEmail(String email,String content) throws MessagingException, IOException, TemplateException {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
         helper.setFrom(from);

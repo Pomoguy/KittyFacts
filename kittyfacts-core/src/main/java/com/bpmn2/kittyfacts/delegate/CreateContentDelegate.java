@@ -1,6 +1,7 @@
 package com.bpmn2.kittyfacts.delegate;
 
 
+import com.bpmn2.kittyfacts.model.KittyFact;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -26,11 +27,13 @@ public class CreateContentDelegate implements JavaDelegate {
     @Override
     public void execute(DelegateExecution delegateExecution) throws TemplateException, IOException {
 
+        KittyFact kittyFact = (KittyFact) delegateExecution.getVariable("kittyFact");
+
 
         Map<String, Object> model = new HashMap<>();
-        model.put("email", delegateExecution.getVariable("email"));
-        model.put("fact", delegateExecution.getVariable("fact"));
-        byte[] imgBytesAsBase64 = Base64.encodeBase64((byte[]) delegateExecution.getVariable("picture"));
+        model.put("email", kittyFact.getEmail());
+        model.put("fact", kittyFact.getFact());
+        byte[] imgBytesAsBase64 = Base64.encodeBase64(kittyFact.getPicture());
         String imgDataAsBase64 = new String(imgBytesAsBase64);
         String imgAsBase64 = "data:image/png;base64," + imgDataAsBase64;
 
