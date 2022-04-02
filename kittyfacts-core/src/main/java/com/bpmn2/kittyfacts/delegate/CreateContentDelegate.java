@@ -26,9 +26,20 @@ public class CreateContentDelegate implements JavaDelegate {
 
     @Override
     public void execute(DelegateExecution delegateExecution) throws TemplateException, IOException {
-
+        byte[] html;
         KittyFact kittyFact = (KittyFact) delegateExecution.getVariable("kittyFact");
 
+        if (!delegateExecution.hasVariable("badContent")) {
+            html = constructKittyFactLetterContent(kittyFact);
+        } else {
+            html = constructFailedLetterContent(kittyFact);
+        }
+        delegateExecution.setVariable("content", html);
+    }
+
+
+
+    public byte[] constructKittyFactLetterContent(KittyFact kittyFact) throws IOException, TemplateException {
 
         Map<String, Object> model = new HashMap<>();
         model.put("email", kittyFact.getEmail());
@@ -36,11 +47,17 @@ public class CreateContentDelegate implements JavaDelegate {
         byte[] imgBytesAsBase64 = Base64.encodeBase64(kittyFact.getPicture());
         String imgDataAsBase64 = new String(imgBytesAsBase64);
         String imgAsBase64 = "data:image/png;base64," + imgDataAsBase64;
-
         model.put("imgAsBase64", imgAsBase64);
         Template template = configuration.getTemplate("email.ftl");
-        byte[] html = FreeMarkerTemplateUtils.processTemplateIntoString(template, model).getBytes(StandardCharsets.UTF_8);
-        delegateExecution.setVariable("content", html);
-
+        return FreeMarkerTemplateUtils.processTemplateIntoString(template, model).getBytes(StandardCharsets.UTF_8);
     }
+
+    public byte[] constructFailedLetterContent(KittyFact kittyFact) throws IOException, TemplateException {
+        Map<String, Object> model = new HashMap<>();
+        model.put("email", kittyFact.getEmail());
+        Template template = configuration.getTemplate("sry.ftl");
+        return FreeMarkerTemplateUtils.processTemplateIntoString(template, model).getBytes(StandardCharsets.UTF_8);
+    }
+
+
 }

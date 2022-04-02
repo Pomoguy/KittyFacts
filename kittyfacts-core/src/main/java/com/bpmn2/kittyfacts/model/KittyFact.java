@@ -3,8 +3,11 @@ package com.bpmn2.kittyfacts.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+
+import java.io.Serializable;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class KittyFact {
+public class KittyFact implements Serializable {
     String email;
     String fact;
     byte[] picture;

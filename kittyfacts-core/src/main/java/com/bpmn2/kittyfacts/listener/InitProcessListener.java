@@ -1,18 +1,16 @@
-package com.bpmn2.kittyfacts.delegate;
+package com.bpmn2.kittyfacts.listener;
 
 import com.bpmn2.kittyfacts.model.KittyFact;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
-import org.camunda.bpm.engine.delegate.ExecutionListener;
-
-
+import org.camunda.bpm.engine.delegate.JavaDelegate;
 
 import org.springframework.stereotype.Component;
 
-@Component("initProcessDelegate")
-public class InitProcessDelegate implements ExecutionListener {
+@Component("initProcessListener")
+public class InitProcessListener implements JavaDelegate {
 
     @Override
-    public void notify(DelegateExecution delegateExecution) throws Exception {
+    public void execute(DelegateExecution delegateExecution) throws Exception {
 
         KittyFact kittyFact = new KittyFact((String) delegateExecution.getVariable("email"));
 

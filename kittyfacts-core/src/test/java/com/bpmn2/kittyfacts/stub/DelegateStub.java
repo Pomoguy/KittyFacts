@@ -1,6 +1,7 @@
 package com.bpmn2.kittyfacts.stub;
 
 
+import org.camunda.bpm.engine.delegate.BpmnError;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 
@@ -24,6 +25,8 @@ public class DelegateStub implements JavaDelegate {
                 delegateExecution.setVariable("content", "SomeContent");
             case "email":
                 //do nothing
+            case "exception":
+                throw new BpmnError("badContent");
         }
     }
 }
