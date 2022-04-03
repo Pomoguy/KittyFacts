@@ -1,0 +1,13 @@
+FROM maven:3.8-amazoncorretto-11 AS MAVEN_TOOL_CHAIN
+COPY pom.xml /tmp/
+COPY kittyfacts-core/pom.xml /tmp/kittyfacts-core/
+COPY kittyfacts-core/src /tmp/kittyfacts-core/src
+COPY kittyfacts-front/pom.xml /tmp/kittyfacts-front/
+COPY kittyfacts-front/src /tmp/kittyfacts-front/src
+WORKDIR /tmp/
+RUN mvn package
+
+FROM adoptopenjdk:11-jre-hotspot
+ARG JAR_FILE=*.jar
+COPY --from=MAVEN_TOOL_CHAIN /tmp/kittyfacts-front/target/${JAR_FILE} application.jar
+ENTRYPOINT ["java", "-jar", "application.jar"]

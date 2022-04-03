@@ -8,6 +8,8 @@ services:
     container_name: KittyFacts-Core
     depends_on:
       - camunda-db
+    ports:
+      - "9080:9080"
     environment:
       - SPRING_PROFILE=prod
       - SPRING_DATASOURCE_URL=jdbc:postgresql://camunda-db:5432/camunda
@@ -15,16 +17,20 @@ services:
       - SPRING_DATASOURCE_PASSWORD=1511
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
       - PORT=9080
-      - MAIL_USER=${MAIL_USER}
-      - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - MAIL_USER=TYPE_EMAIL_HERE
+      - MAIL_PASSWORD=TYPE_EMAIL_PASSWORD_HERE
   front:
     build:
       context: .
       dockerfile: kittyfacts-front/Dockerfile
     container_name: KittyFacts-Front
+    depends_on:
+      - core
+    ports:
+      - "8080:8080"
     environment:
-      - SPRING_PROFILE=prod
       - PORT=8080
+      - CAMUNDA_URL=http://core:9080/
 
   camunda-db:
     image: 'postgres:13.1-alpine'
