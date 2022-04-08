@@ -20,7 +20,8 @@
 	<modules>
 		<module>kittyfacts-core</module>
 		<module>kittyfacts-front</module>
-	</modules>
+        <module>kittyfacts-bot</module>
+    </modules>
 
 	<properties>
 		<java.version>11</java.version>
