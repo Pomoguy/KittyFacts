@@ -4,7 +4,7 @@
     <bpmn:participant id="Participant_0rs78lc" name="Факты о кошках" processRef="KittyFact" />
   </bpmn:collaboration>
   <bpmn:process id="KittyFact" isExecutable="true">
-    <bpmn:callActivity id="Send_Email_Success" name="Отправить финальное письмо" calledElement="SendEmail">
+    <bpmn:callActivity id="Send_Success" name="Отправить результат" camunda:asyncBefore="true" calledElement="SendContent">
       <bpmn:extensionElements>
         <camunda:in source="kittyFact" target="kittyFact" />
       </bpmn:extensionElements>
@@ -61,18 +61,18 @@
       <bpmn:outgoing>Flow_04jsgkw</bpmn:outgoing>
       <bpmn:errorEventDefinition id="ErrorEventDefinition_00jho1p" errorRef="Error_0ns4sk7" camunda:errorCodeVariable="badContent" />
     </bpmn:boundaryEvent>
-    <bpmn:sequenceFlow id="Flow_01n1ytz" sourceRef="Send_email_Error" targetRef="Event_1saqr5i" />
-    <bpmn:sequenceFlow id="Flow_04jsgkw" sourceRef="Event_0ah5h84" targetRef="Send_email_Error">
+    <bpmn:sequenceFlow id="Flow_01n1ytz" sourceRef="Send_Error" targetRef="Event_1saqr5i" />
+    <bpmn:sequenceFlow id="Flow_04jsgkw" sourceRef="Event_0ah5h84" targetRef="Send_Error">
       <bpmn:extensionElements>
         <camunda:properties>
           <camunda:property name="Fail" />
         </camunda:properties>
       </bpmn:extensionElements>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_0k9eoge" sourceRef="Activity_1tklnzv" targetRef="Send_Email_Success" />
+    <bpmn:sequenceFlow id="Flow_0k9eoge" sourceRef="Activity_1tklnzv" targetRef="Send_Success" />
     <bpmn:sequenceFlow id="Flow_1dz29wu" sourceRef="StartEvent_1" targetRef="Activity_1tklnzv" />
-    <bpmn:sequenceFlow id="Flow_0up28ei" sourceRef="Send_Email_Success" targetRef="Event_0tziwld" />
-    <bpmn:callActivity id="Send_email_Error" name="Отправить письмо с извинениями" calledElement="SendEmail">
+    <bpmn:sequenceFlow id="Flow_0up28ei" sourceRef="Send_Success" targetRef="Event_0tziwld" />
+    <bpmn:callActivity id="Send_Error" name="Отправить  извинения" camunda:asyncBefore="true" calledElement="SendContent">
       <bpmn:extensionElements>
         <camunda:in source="kittyFact" target="kittyFact" />
         <camunda:in source="badContent" target="badContent" />
@@ -109,7 +109,7 @@
         <di:waypoint x="950" y="590" />
         <di:waypoint x="1092" y="590" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="Activity_1m2937x_di" bpmnElement="Send_Email_Success">
+      <bpmndi:BPMNShape id="Activity_1m2937x_di" bpmnElement="Send_Success">
         <dc:Bounds x="1370" y="297" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0tziwld_di" bpmnElement="Event_0tziwld">
@@ -123,9 +123,6 @@
         <bpmndi:BPMNLabel>
           <dc:Bounds x="255" y="362" width="90" height="27" />
         </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0lydroh_di" bpmnElement="Send_email_Error">
-        <dc:Bounds x="850" y="550" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1ttpmao_di" bpmnElement="Activity_1tklnzv" isExpanded="true">
         <dc:Bounds x="630" y="172" width="570" height="330" />
@@ -175,6 +172,9 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0asvn5v_di" bpmnElement="Event_0asvn5v">
         <dc:Bounds x="1142" y="314" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0lydroh_di" bpmnElement="Send_Error">
+        <dc:Bounds x="850" y="550" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1r0opnz_di" bpmnElement="Event_0ah5h84">
         <dc:Bounds x="662" y="484" width="36" height="36" />

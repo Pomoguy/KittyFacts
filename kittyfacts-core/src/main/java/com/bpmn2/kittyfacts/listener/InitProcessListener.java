@@ -25,7 +25,6 @@ public class InitProcessListener implements JavaDelegate {
             kittyFact.setChannelType(ChannelType.EMAIL);
         }
 
-        ObjectValue objectValue = Variables.objectValue(kittyFact).serializationDataFormat("application/json").create();
-        delegateExecution.setVariable("kittyFact", objectValue);
+        delegateExecution.setVariable("kittyFact", kittyFact);
     }
 }
