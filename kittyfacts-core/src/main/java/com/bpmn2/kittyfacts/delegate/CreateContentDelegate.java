@@ -44,8 +44,7 @@ public class CreateContentDelegate implements JavaDelegate {
         Map<String, Object> model = new HashMap<>();
         model.put("email", kittyFact.getEmail());
         model.put("fact", kittyFact.getFact());
-        byte[] imgBytesAsBase64 = Base64.encodeBase64(kittyFact.getPicture());
-        String imgDataAsBase64 = new String(imgBytesAsBase64);
+        String imgDataAsBase64 = new String(kittyFact.getPicture());
         String imgAsBase64 = "data:image/png;base64," + imgDataAsBase64;
         model.put("imgAsBase64", imgAsBase64);
         Template template = configuration.getTemplate("email.ftl");

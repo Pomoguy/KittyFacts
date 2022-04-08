@@ -28,6 +28,8 @@ public class GetCatFactDelegate implements JavaDelegate {
             KittyFact kittyFact = objectValue.getValue(KittyFact.class);
             kittyFact.setFact(catFactNinjaClient.getCatFact().getFact());
             delegateExecution.setVariable("kittyFact", kittyFact);
+
+
         } catch (Exception exception) {
             throw new BpmnError("badContent", exception.getMessage());
         }

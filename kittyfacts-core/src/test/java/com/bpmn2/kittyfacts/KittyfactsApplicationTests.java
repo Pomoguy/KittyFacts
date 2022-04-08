@@ -3,13 +3,14 @@ package com.bpmn2.kittyfacts;
 import com.bpmn2.kittyfacts.config.ProcessTestConfig;
 
 
-
 import com.bpmn2.kittyfacts.stub.DelegateStub;
+import org.camunda.bpm.engine.runtime.Job;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
+import org.camunda.bpm.engine.task.Task;
 import org.camunda.bpm.engine.test.Deployment;
 import org.camunda.bpm.engine.test.ProcessEngineRule;
 import org.camunda.bpm.engine.test.mock.Mocks;
-import org.camunda.bpm.extension.mockito.DelegateExpressions;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -34,8 +35,6 @@ public class KittyfactsApplicationTests {
 
     @Before
     public void Setup() {
-        DelegateExpressions.autoMock("bpmn/kittyFacts.bpmn");
-        //
         Mocks.register("getCatFactDelegate", new DelegateStub("fact"));
         Mocks.register("getPictureDelegate", new DelegateStub("picture"));
         Mocks.register("createContentDelegate", new DelegateStub("content"));
@@ -51,7 +50,7 @@ public class KittyfactsApplicationTests {
 
     @Test
     @Deployment(resources = {"bpmn/kittyFacts.bpmn"})
-    public void StartProcess() {
+    public void StartEmailProcess() {
 
 
         ProcessInstance pi = processEngineRule.getRuntimeService()
@@ -65,9 +64,23 @@ public class KittyfactsApplicationTests {
     }
 
     @Test
-    @Deployment(resources = {"bpmn/kittyFacts.bpmn", "bpmn/sendEmail.bpmn"})
-    public void HappyPath() {
+    @Deployment(resources = {"bpmn/kittyFacts.bpmn"})
+    public void StartTelegramProcess() {
+        long chatId = 1111;
 
+        ProcessInstance pi = processEngineRule.getRuntimeService()
+                .startProcessInstanceByKey(PROCESS_KEY,
+                        withVariables("chatId", chatId));
+
+        assertThat(pi).isNotNull();
+        assertThat(pi).hasVariables("chatId");
+        assertThat(pi).isStarted();
+
+    }
+
+    @Test
+    @Deployment(resources = {"bpmn/kittyFacts.bpmn", "bpmn/sendContent.bpmn"})
+    public void HappyPathEmail() {
         ProcessInstance pi = processEngineRule.getRuntimeService()
                 .startProcessInstanceByKey(PROCESS_KEY,
                         withVariables("email", "test@mail.com"));
@@ -79,22 +92,50 @@ public class KittyfactsApplicationTests {
         assertThat(pi).hasPassed("GetCatFactDelegate");
         assertThat(pi).hasPassed("GetPictureDelegate");
         assertThat(pi).hasVariables("kittyFact");
-        assertThat(pi).isWaitingAt("Send_email_Error");
+        assertThat(pi).isWaitingAt("Send_Success");
         execute(processEngineRule
                 .getManagementService()
                 .createJobQuery()
                 .active()
-                .processDefinitionKey("SendEmail")
+                .processDefinitionKey("SendContent")
                 .singleResult());
-        assertThat(pi).hasPassed("Send_Email_Success");
-        /*
-        Так и не получилось запилить проверку прохождения шагов внутри вызванной активити
+        assertThat(pi).hasPassed("Send_Success");
+
+        assertThat(pi).isEnded();
+    }
+
+    @Test
+    @Deployment(resources = {"bpmn/kittyFacts.bpmn", "bpmn/sendContent.bpmn"})
+    public void HappyPathTelegram() {
+        long chatId = 1111;
+
+        ProcessInstance pi = processEngineRule.getRuntimeService()
+                .startProcessInstanceByKey(PROCESS_KEY,
+                        withVariables("chatId", chatId));
+
+        assertThat(pi).isNotNull();
+        assertThat(pi).hasVariables("chatId");
+        assertThat(pi).isWaitingAt("StartEvent_1");
+        execute(job());
+        assertThat(pi).hasPassed("GetCatFactDelegate");
+        assertThat(pi).hasPassed("GetPictureDelegate");
+        assertThat(pi).hasVariables("kittyFact");
+        assertThat(pi).isWaitingAt("Send_Success");
+        execute(processEngineRule
+                .getManagementService()
+                .createJobQuery()
+                .active()
+                .processDefinitionKey("SendContent")
+                .singleResult());
+
+       /*
+       Не удалось победить=(
         */
         assertThat(pi).isEnded();
     }
 
     @Test
-    @Deployment(resources = {"bpmn/kittyFacts.bpmn", "bpmn/sendEmail.bpmn"})
+    @Deployment(resources = {"bpmn/kittyFacts.bpmn", "bpmn/sendContent.bpmn"})
     public void ErrorPath() {
 
         Mocks.register("getPictureDelegate", new DelegateStub("exception"));
@@ -109,14 +150,14 @@ public class KittyfactsApplicationTests {
         execute(job());
         assertThat(pi).hasPassed("GetCatFactDelegate");
         assertThat(pi).hasVariables("kittyFact");
-        assertThat(pi).isWaitingAt("Send_email_Error");
+        assertThat(pi).isWaitingAt("Send_Error");
         execute(processEngineRule
                 .getManagementService()
                 .createJobQuery()
                 .active()
-                .processDefinitionKey("SendEmail")
+                .processDefinitionKey("SendContent")
                 .singleResult());
-        assertThat(pi).hasPassed("Send_email_Error");
+        assertThat(pi).hasPassed("Send_Error");
 
         assertThat(pi).isEnded();
     }

@@ -11,6 +11,8 @@ public class KittyFact implements Serializable {
     String email;
     String fact;
     byte[] picture;
+    ChannelType channelType;
+    Long chatId;
 
     public String getEmail() {
         return email;
@@ -38,6 +40,22 @@ public class KittyFact implements Serializable {
 
     public KittyFact(String email) {
         this.email = email;
+    }
+
+    public ChannelType getChannelType() {
+        return channelType;
+    }
+
+    public void setChannelType(ChannelType channelType) {
+        this.channelType = channelType;
+    }
+
+    public Long getChatId() {
+        return chatId;
+    }
+
+    public void setChatId(Long chatId) {
+        this.chatId = chatId;
     }
 
     public KittyFact() {

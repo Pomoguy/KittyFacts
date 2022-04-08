@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0qdr4mu" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.12.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.15.0">
+  <bpmn:collaboration id="Collaboration_1ef70r0">
+    <bpmn:participant id="Participant_0rs78lc" name="Отправка письма" processRef="SendContent" />
+  </bpmn:collaboration>
+  <bpmn:process id="SendContent" isExecutable="true">
+    <bpmn:sequenceFlow id="Flow_080301l" sourceRef="Event_0og0s7p" targetRef="Gateway_1d249gz" />
+    <bpmn:sequenceFlow id="Flow_0xzmx5u" sourceRef="CreateContentDelegate" targetRef="SendContentDelegate" />
+    <bpmn:sequenceFlow id="Flow_00zyi4e" sourceRef="SendContentDelegate" targetRef="Event_1xd5bhp" />
+    <bpmn:serviceTask id="CreateContentDelegate" name="Сформировать текст письма" camunda:delegateExpression="${createContentDelegate}">
+      <bpmn:incoming>Flow_0myr96z</bpmn:incoming>
+      <bpmn:outgoing>Flow_0xzmx5u</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="SendContentDelegate" name="Отправить письмо" camunda:delegateExpression="${sendContentDelegate}">
+      <bpmn:incoming>Flow_0xzmx5u</bpmn:incoming>
+      <bpmn:outgoing>Flow_00zyi4e</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="Event_1xd5bhp">
+      <bpmn:incoming>Flow_00zyi4e</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1ke6yu7" name="1.2 Отправить в Telegram" sourceRef="Gateway_1d249gz" targetRef="Activity_1r2br48" />
+    <bpmn:endEvent id="Event_11gfuka">
+      <bpmn:incoming>Flow_1iuytpr</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1iuytpr" sourceRef="Activity_1r2br48" targetRef="Event_11gfuka" />
+    <bpmn:sequenceFlow id="Flow_0myr96z" name="1.1 Отправить по Email" sourceRef="Gateway_1d249gz" targetRef="CreateContentDelegate">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${kittyFact.channelType == 'EMAIL'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:exclusiveGateway id="Gateway_1d249gz" default="Flow_1ke6yu7">
+      <bpmn:incoming>Flow_080301l</bpmn:incoming>
+      <bpmn:outgoing>Flow_1ke6yu7</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0myr96z</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:startEvent id="Event_0og0s7p" camunda:asyncAfter="true">
+      <bpmn:outgoing>Flow_080301l</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="Activity_1r2br48" name="Сформировать сообщение и отправить в телеграм" camunda:type="external" camunda:topic="sendFactToTelegram">
+      <bpmn:incoming>Flow_1ke6yu7</bpmn:incoming>
+      <bpmn:outgoing>Flow_1iuytpr</bpmn:outgoing>
+    </bpmn:serviceTask>
+  </bpmn:process>
+  <bpmn:error id="Error_0ns4sk7" name="Error_CollectContent" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1ef70r0">
+      <bpmndi:BPMNShape id="Participant_0rs78lc_di" bpmnElement="Participant_0rs78lc" isHorizontal="true">
+        <dc:Bounds x="129" y="80" width="1131" height="450" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0myr96z_di" bpmnElement="Flow_0myr96z">
+        <di:waypoint x="370" y="275" />
+        <di:waypoint x="370" y="240" />
+        <di:waypoint x="540" y="240" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="405" y="250" width="89" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1iuytpr_di" bpmnElement="Flow_1iuytpr">
+        <di:waypoint x="640" y="360" />
+        <di:waypoint x="792" y="360" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1ke6yu7_di" bpmnElement="Flow_1ke6yu7">
+        <di:waypoint x="370" y="325" />
+        <di:waypoint x="370" y="360" />
+        <di:waypoint x="540" y="360" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="409" y="326" width="82" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_00zyi4e_di" bpmnElement="Flow_00zyi4e">
+        <di:waypoint x="860" y="240" />
+        <di:waypoint x="1002" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0xzmx5u_di" bpmnElement="Flow_0xzmx5u">
+        <di:waypoint x="640" y="240" />
+        <di:waypoint x="760" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_080301l_di" bpmnElement="Flow_080301l">
+        <di:waypoint x="258" y="300" />
+        <di:waypoint x="345" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Activity_19ag67u_di" bpmnElement="CreateContentDelegate">
+        <dc:Bounds x="540" y="200" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1puaw2r_di" bpmnElement="SendContentDelegate">
+        <dc:Bounds x="760" y="200" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1xd5bhp_di" bpmnElement="Event_1xd5bhp">
+        <dc:Bounds x="1002" y="222" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_11gfuka_di" bpmnElement="Event_11gfuka">
+        <dc:Bounds x="792" y="342" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1d249gz_di" bpmnElement="Gateway_1d249gz" isMarkerVisible="true">
+        <dc:Bounds x="345" y="275" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="331" y="272" width="79" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0og0s7p_di" bpmnElement="Event_0og0s7p">
+        <dc:Bounds x="222" y="282" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1u1t5u7_di" bpmnElement="Activity_1r2br48">
+        <dc:Bounds x="540" y="320" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
