@@ -6,76 +6,83 @@
   <bpmn:process id="KittyFact" isExecutable="true">
     <bpmn:callActivity id="Send_Success" name="Отправить результат" camunda:asyncBefore="true" calledElement="SendContent">
       <bpmn:extensionElements>
-        <camunda:in source="kittyFact" target="kittyFact" />
+        <camunda:in source="channelType" target="channelType" />
+        <camunda:in source="picture" target="picture" />
+        <camunda:in source="fact" target="fact" />
+        <camunda:in source="chatId" target="chatId" />
+        <camunda:in source="email" target="email" />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_0k9eoge</bpmn:incoming>
       <bpmn:outgoing>Flow_0up28ei</bpmn:outgoing>
     </bpmn:callActivity>
-    <bpmn:endEvent id="Event_0tziwld">
+    <bpmn:endEvent id="KittyFact_EndEvent_1">
       <bpmn:incoming>Flow_0up28ei</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:endEvent id="Event_1saqr5i">
+    <bpmn:endEvent id="KittyFact_EndEvent_2">
       <bpmn:incoming>Flow_01n1ytz</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:startEvent id="StartEvent_1" name="Пришел запрос на факт о кошках" camunda:asyncAfter="true">
+    <bpmn:startEvent id="KittyFact_StartEvent_1" name="Пришел запрос на факт о кошках" camunda:asyncAfter="true">
       <bpmn:extensionElements>
         <camunda:executionListener class="com.bpmn2.kittyfacts.listener.InitProcessListener" event="end" />
       </bpmn:extensionElements>
       <bpmn:outgoing>Flow_1dz29wu</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:transaction id="Activity_1tklnzv">
+    <bpmn:transaction id="Collect_Data">
       <bpmn:incoming>Flow_1dz29wu</bpmn:incoming>
       <bpmn:outgoing>Flow_0k9eoge</bpmn:outgoing>
-      <bpmn:startEvent id="Event_1nikqgc">
+      <bpmn:startEvent id="Collect_Data_StartEvent_1">
         <bpmn:outgoing>Flow_14rkh9c</bpmn:outgoing>
       </bpmn:startEvent>
-      <bpmn:serviceTask id="GetPictureDelegate" name="Получить случайную картинку" camunda:delegateExpression="${getPictureDelegate}">
+      <bpmn:serviceTask id="GetPictureDelegate" name="Получить случайную картинку" camunda:asyncAfter="true" camunda:exclusive="false" camunda:delegateExpression="${getPictureDelegate}">
         <bpmn:incoming>Flow_1am16x5</bpmn:incoming>
         <bpmn:outgoing>Flow_0zia0yk</bpmn:outgoing>
       </bpmn:serviceTask>
-      <bpmn:parallelGateway id="Gateway_1jgldqw">
+      <bpmn:parallelGateway id="Collect_Data_Gateway_1">
         <bpmn:incoming>Flow_14rkh9c</bpmn:incoming>
         <bpmn:outgoing>Flow_1jfa90c</bpmn:outgoing>
         <bpmn:outgoing>Flow_1am16x5</bpmn:outgoing>
       </bpmn:parallelGateway>
-      <bpmn:parallelGateway id="Gateway_15knhkc">
+      <bpmn:parallelGateway id="Collect_Data_Gateway_2">
         <bpmn:incoming>Flow_1paebvs</bpmn:incoming>
         <bpmn:incoming>Flow_0zia0yk</bpmn:incoming>
         <bpmn:outgoing>Flow_0bgnf1m</bpmn:outgoing>
       </bpmn:parallelGateway>
-      <bpmn:serviceTask id="GetCatFactDelegate" name="Получить факт о кошках" camunda:delegateExpression="${getCatFactDelegate}">
+      <bpmn:serviceTask id="GetCatFactDelegate" name="Получить факт о кошках" camunda:asyncAfter="true" camunda:exclusive="false" camunda:delegateExpression="${getCatFactDelegate}">
         <bpmn:incoming>Flow_1jfa90c</bpmn:incoming>
         <bpmn:outgoing>Flow_1paebvs</bpmn:outgoing>
       </bpmn:serviceTask>
-      <bpmn:sequenceFlow id="Flow_14rkh9c" sourceRef="Event_1nikqgc" targetRef="Gateway_1jgldqw" />
-      <bpmn:sequenceFlow id="Flow_1jfa90c" sourceRef="Gateway_1jgldqw" targetRef="GetCatFactDelegate" />
-      <bpmn:sequenceFlow id="Flow_1paebvs" sourceRef="GetCatFactDelegate" targetRef="Gateway_15knhkc" />
-      <bpmn:sequenceFlow id="Flow_1am16x5" sourceRef="Gateway_1jgldqw" targetRef="GetPictureDelegate" />
-      <bpmn:sequenceFlow id="Flow_0zia0yk" sourceRef="GetPictureDelegate" targetRef="Gateway_15knhkc" />
-      <bpmn:endEvent id="Event_0asvn5v">
+      <bpmn:sequenceFlow id="Flow_14rkh9c" sourceRef="Collect_Data_StartEvent_1" targetRef="Collect_Data_Gateway_1" />
+      <bpmn:sequenceFlow id="Flow_1jfa90c" sourceRef="Collect_Data_Gateway_1" targetRef="GetCatFactDelegate" />
+      <bpmn:sequenceFlow id="Flow_1paebvs" sourceRef="GetCatFactDelegate" targetRef="Collect_Data_Gateway_2" />
+      <bpmn:sequenceFlow id="Flow_1am16x5" sourceRef="Collect_Data_Gateway_1" targetRef="GetPictureDelegate" />
+      <bpmn:sequenceFlow id="Flow_0zia0yk" sourceRef="GetPictureDelegate" targetRef="Collect_Data_Gateway_2" />
+      <bpmn:endEvent id="Collect_Data_EndEvent_1">
         <bpmn:incoming>Flow_0bgnf1m</bpmn:incoming>
       </bpmn:endEvent>
-      <bpmn:sequenceFlow id="Flow_0bgnf1m" sourceRef="Gateway_15knhkc" targetRef="Event_0asvn5v" />
+      <bpmn:sequenceFlow id="Flow_0bgnf1m" sourceRef="Collect_Data_Gateway_2" targetRef="Collect_Data_EndEvent_1" />
     </bpmn:transaction>
-    <bpmn:boundaryEvent id="Event_0ah5h84" attachedToRef="Activity_1tklnzv">
+    <bpmn:boundaryEvent id="Collect_Data_ErrorEvent_1" attachedToRef="Collect_Data">
       <bpmn:outgoing>Flow_04jsgkw</bpmn:outgoing>
       <bpmn:errorEventDefinition id="ErrorEventDefinition_00jho1p" errorRef="Error_0ns4sk7" camunda:errorCodeVariable="badContent" />
     </bpmn:boundaryEvent>
-    <bpmn:sequenceFlow id="Flow_01n1ytz" sourceRef="Send_Error" targetRef="Event_1saqr5i" />
-    <bpmn:sequenceFlow id="Flow_04jsgkw" sourceRef="Event_0ah5h84" targetRef="Send_Error">
+    <bpmn:sequenceFlow id="Flow_01n1ytz" sourceRef="Send_Error" targetRef="KittyFact_EndEvent_2" />
+    <bpmn:sequenceFlow id="Flow_04jsgkw" sourceRef="Collect_Data_ErrorEvent_1" targetRef="Send_Error">
       <bpmn:extensionElements>
         <camunda:properties>
           <camunda:property name="Fail" />
         </camunda:properties>
       </bpmn:extensionElements>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_0k9eoge" sourceRef="Activity_1tklnzv" targetRef="Send_Success" />
-    <bpmn:sequenceFlow id="Flow_1dz29wu" sourceRef="StartEvent_1" targetRef="Activity_1tklnzv" />
-    <bpmn:sequenceFlow id="Flow_0up28ei" sourceRef="Send_Success" targetRef="Event_0tziwld" />
+    <bpmn:sequenceFlow id="Flow_0k9eoge" sourceRef="Collect_Data" targetRef="Send_Success" />
+    <bpmn:sequenceFlow id="Flow_1dz29wu" sourceRef="KittyFact_StartEvent_1" targetRef="Collect_Data" />
+    <bpmn:sequenceFlow id="Flow_0up28ei" sourceRef="Send_Success" targetRef="KittyFact_EndEvent_1" />
     <bpmn:callActivity id="Send_Error" name="Отправить  извинения" camunda:asyncBefore="true" calledElement="SendContent">
       <bpmn:extensionElements>
-        <camunda:in source="kittyFact" target="kittyFact" />
-        <camunda:in source="badContent" target="badContent" />
+        <camunda:in source="channelType" target="channelType" />
+        <camunda:in source="picture" target="picture" />
+        <camunda:in source="fact" target="fact" />
+        <camunda:in source="email" target="email" />
+        <camunda:in source="chatId" target="chatId" />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_04jsgkw</bpmn:incoming>
       <bpmn:outgoing>Flow_01n1ytz</bpmn:outgoing>
@@ -112,19 +119,19 @@
       <bpmndi:BPMNShape id="Activity_1m2937x_di" bpmnElement="Send_Success">
         <dc:Bounds x="1370" y="297" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0tziwld_di" bpmnElement="Event_0tziwld">
+      <bpmndi:BPMNShape id="Event_0tziwld_di" bpmnElement="KittyFact_EndEvent_1">
         <dc:Bounds x="1582" y="319" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1saqr5i_di" bpmnElement="Event_1saqr5i">
+      <bpmndi:BPMNShape id="Event_1saqr5i_di" bpmnElement="KittyFact_EndEvent_2">
         <dc:Bounds x="1092" y="572" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1nknnis_di" bpmnElement="StartEvent_1">
+      <bpmndi:BPMNShape id="Event_1nknnis_di" bpmnElement="KittyFact_StartEvent_1">
         <dc:Bounds x="282" y="319" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="255" y="362" width="90" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1ttpmao_di" bpmnElement="Activity_1tklnzv" isExpanded="true">
+      <bpmndi:BPMNShape id="Activity_1ttpmao_di" bpmnElement="Collect_Data" isExpanded="true">
         <dc:Bounds x="630" y="172" width="570" height="330" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_0bgnf1m_di" bpmnElement="Flow_0bgnf1m">
@@ -155,28 +162,28 @@
         <di:waypoint x="706" y="332" />
         <di:waypoint x="745" y="332" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="Event_1nikqgc_di" bpmnElement="Event_1nikqgc">
+      <bpmndi:BPMNShape id="Event_1nikqgc_di" bpmnElement="Collect_Data_StartEvent_1">
         <dc:Bounds x="670" y="314" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_090hb3e_di" bpmnElement="GetPictureDelegate">
         <dc:Bounds x="850" y="402" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_1a5ybht_di" bpmnElement="Gateway_1jgldqw">
+      <bpmndi:BPMNShape id="Gateway_1a5ybht_di" bpmnElement="Collect_Data_Gateway_1">
         <dc:Bounds x="745" y="307" width="50" height="50" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_1y3zurp_di" bpmnElement="Gateway_15knhkc">
+      <bpmndi:BPMNShape id="Gateway_1y3zurp_di" bpmnElement="Collect_Data_Gateway_2">
         <dc:Bounds x="985" y="307" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1q82s8n_di" bpmnElement="GetCatFactDelegate">
         <dc:Bounds x="850" y="192" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0asvn5v_di" bpmnElement="Event_0asvn5v">
+      <bpmndi:BPMNShape id="Event_0asvn5v_di" bpmnElement="Collect_Data_EndEvent_1">
         <dc:Bounds x="1142" y="314" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0lydroh_di" bpmnElement="Send_Error">
         <dc:Bounds x="850" y="550" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1r0opnz_di" bpmnElement="Event_0ah5h84">
+      <bpmndi:BPMNShape id="Event_1r0opnz_di" bpmnElement="Collect_Data_ErrorEvent_1">
         <dc:Bounds x="662" y="484" width="36" height="36" />
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
