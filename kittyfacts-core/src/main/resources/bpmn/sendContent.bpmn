@@ -4,9 +4,9 @@
     <bpmn:participant id="Participant_0rs78lc" name="Отправка письма" processRef="SendContent" />
   </bpmn:collaboration>
   <bpmn:process id="SendContent" isExecutable="true">
-    <bpmn:sequenceFlow id="Flow_080301l" sourceRef="Event_0og0s7p" targetRef="Gateway_1d249gz" />
+    <bpmn:sequenceFlow id="Flow_080301l" sourceRef="SendContent_StartEvent_1" targetRef="SendContent_Gateway_1" />
     <bpmn:sequenceFlow id="Flow_0xzmx5u" sourceRef="CreateContentDelegate" targetRef="SendContentDelegate" />
-    <bpmn:sequenceFlow id="Flow_00zyi4e" sourceRef="SendContentDelegate" targetRef="Event_1xd5bhp" />
+    <bpmn:sequenceFlow id="Flow_00zyi4e" sourceRef="SendContentDelegate" targetRef="SendContent_EndEvent_1" />
     <bpmn:serviceTask id="CreateContentDelegate" name="Сформировать текст письма" camunda:delegateExpression="${createContentDelegate}">
       <bpmn:incoming>Flow_0myr96z</bpmn:incoming>
       <bpmn:outgoing>Flow_0xzmx5u</bpmn:outgoing>
@@ -15,26 +15,26 @@
       <bpmn:incoming>Flow_0xzmx5u</bpmn:incoming>
       <bpmn:outgoing>Flow_00zyi4e</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:endEvent id="Event_1xd5bhp">
+    <bpmn:endEvent id="SendContent_EndEvent_1">
       <bpmn:incoming>Flow_00zyi4e</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_1ke6yu7" name="1.2 Отправить в Telegram" sourceRef="Gateway_1d249gz" targetRef="Activity_1r2br48" />
-    <bpmn:endEvent id="Event_11gfuka">
+    <bpmn:sequenceFlow id="Flow_1ke6yu7" name="1.2 Отправить в Telegram" sourceRef="SendContent_Gateway_1" targetRef="SendFactToTelegram" />
+    <bpmn:endEvent id="SendContent_EndEvent_2">
       <bpmn:incoming>Flow_1iuytpr</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_1iuytpr" sourceRef="Activity_1r2br48" targetRef="Event_11gfuka" />
-    <bpmn:sequenceFlow id="Flow_0myr96z" name="1.1 Отправить по Email" sourceRef="Gateway_1d249gz" targetRef="CreateContentDelegate">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${kittyFact.channelType == 'EMAIL'}</bpmn:conditionExpression>
+    <bpmn:sequenceFlow id="Flow_1iuytpr" sourceRef="SendFactToTelegram" targetRef="SendContent_EndEvent_2" />
+    <bpmn:sequenceFlow id="Flow_0myr96z" name="1.1 Отправить по Email" sourceRef="SendContent_Gateway_1" targetRef="CreateContentDelegate">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${channelType == 'EMAIL'}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:exclusiveGateway id="Gateway_1d249gz" default="Flow_1ke6yu7">
+    <bpmn:exclusiveGateway id="SendContent_Gateway_1" default="Flow_1ke6yu7">
       <bpmn:incoming>Flow_080301l</bpmn:incoming>
       <bpmn:outgoing>Flow_1ke6yu7</bpmn:outgoing>
       <bpmn:outgoing>Flow_0myr96z</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:startEvent id="Event_0og0s7p" camunda:asyncAfter="true">
+    <bpmn:startEvent id="SendContent_StartEvent_1" camunda:asyncAfter="true">
       <bpmn:outgoing>Flow_080301l</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:serviceTask id="Activity_1r2br48" name="Сформировать сообщение и отправить в телеграм" camunda:type="external" camunda:topic="sendFactToTelegram">
+    <bpmn:serviceTask id="SendFactToTelegram" name="Сформировать сообщение и отправить в телеграм" camunda:type="external" camunda:topic="sendFactToTelegram">
       <bpmn:incoming>Flow_1ke6yu7</bpmn:incoming>
       <bpmn:outgoing>Flow_1iuytpr</bpmn:outgoing>
     </bpmn:serviceTask>
@@ -83,22 +83,22 @@
       <bpmndi:BPMNShape id="Activity_1puaw2r_di" bpmnElement="SendContentDelegate">
         <dc:Bounds x="760" y="200" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1xd5bhp_di" bpmnElement="Event_1xd5bhp">
+      <bpmndi:BPMNShape id="Event_1xd5bhp_di" bpmnElement="SendContent_EndEvent_1">
         <dc:Bounds x="1002" y="222" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_11gfuka_di" bpmnElement="Event_11gfuka">
+      <bpmndi:BPMNShape id="Event_11gfuka_di" bpmnElement="SendContent_EndEvent_2">
         <dc:Bounds x="792" y="342" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_1d249gz_di" bpmnElement="Gateway_1d249gz" isMarkerVisible="true">
+      <bpmndi:BPMNShape id="Gateway_1d249gz_di" bpmnElement="SendContent_Gateway_1" isMarkerVisible="true">
         <dc:Bounds x="345" y="275" width="50" height="50" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="331" y="272" width="79" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0og0s7p_di" bpmnElement="Event_0og0s7p">
+      <bpmndi:BPMNShape id="Event_0og0s7p_di" bpmnElement="SendContent_StartEvent_1">
         <dc:Bounds x="222" y="282" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1u1t5u7_di" bpmnElement="Activity_1r2br48">
+      <bpmndi:BPMNShape id="Activity_1u1t5u7_di" bpmnElement="SendFactToTelegram">
         <dc:Bounds x="540" y="320" width="100" height="80" />
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>

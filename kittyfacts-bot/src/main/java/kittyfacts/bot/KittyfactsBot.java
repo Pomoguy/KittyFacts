@@ -1,8 +1,12 @@
 package kittyfacts.bot;
 
+import org.apache.commons.codec.binary.Base64;
 
-import kittyfacts.service.KittyFactCoreClient;
-import org.apache.tomcat.util.codec.binary.Base64;
+import org.camunda.community.rest.client.api.ProcessDefinitionApi;
+import org.camunda.community.rest.client.dto.ProcessInstanceWithVariablesDto;
+import org.camunda.community.rest.client.dto.StartProcessInstanceDto;
+import org.camunda.community.rest.client.dto.VariableValueDto;
+import org.camunda.community.rest.client.invoker.ApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -16,10 +20,9 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
-
-
-
 
 
 @Service
@@ -30,10 +33,16 @@ public class KittyfactsBot extends TelegramLongPollingBot {
     @Value("${telegram.bot-token}")
     String botToken;
 
+    @Value("${camunda.bpm.processkey}")
+    String processKey;
+
     @Autowired
     ReplyKeyboardMaker replyKeyboardMaker;
+
+
     @Autowired
-    KittyFactCoreClient kittyFactCoreClient;
+    private ProcessDefinitionApi processDefinitionApi;
+
 
     @Override
     public String getBotUsername() {
@@ -45,19 +54,29 @@ public class KittyfactsBot extends TelegramLongPollingBot {
         return botToken;
     }
 
+
+    ;
+
     @Override
     public void onUpdateReceived(Update update) {
+
         Message message = update.getMessage();
         long chatId = message.getChatId();
         try {
             if (Objects.equals(message.getText(), "Get interesting fact")) {
-                kittyFactCoreClient.startProcess("", chatId);
+                Map<String, VariableValueDto> variables = new HashMap<>();
+                variables.put("email", new VariableValueDto().value("any@mail.com").type("String"));
+                variables.put("chatId", new VariableValueDto().value(chatId).type("Long"));
+
+                processDefinitionApi.startProcessInstanceByKey(
+                        processKey, new StartProcessInstanceDto().variables(variables));
+
                 sendNotification(chatId, getRandomString());
             } else {
                 String responseText = message.hasText() ? getRandomString() : "I don't understand, i'm kitty :(";
                 sendNotification(chatId, responseText);
             }
-        } catch (TelegramApiException e) {
+        } catch (TelegramApiException | ApiException e) {
             e.printStackTrace();
         }
     }
@@ -75,16 +94,16 @@ public class KittyfactsBot extends TelegramLongPollingBot {
 
         SendPhoto kittyfact = new SendPhoto();
         kittyfact.setChatId(chatId.toString());
-        byte[] imgBytesAsBase64 = Base64.decodeBase64(picture);
-        kittyfact.setPhoto(new InputFile(new ByteArrayInputStream(imgBytesAsBase64), "kitty.png"));
+        //byte[] imgBytesAsBase64 = Base64.decodeBase64(picture);
+        kittyfact.setPhoto(new InputFile(new ByteArrayInputStream(picture), "kitty.png"));
         kittyfact.setCaption(fact);
         execute(kittyfact);
     }
 
 
-    private String getRandomString(){
-        int random = (int) ( Math.random() * 3 );
-        switch (random){
+    private String getRandomString() {
+        int random = (int) (Math.random() * 3);
+        switch (random) {
             case 1:
                 return "Hmm, let me think...meow";
             case 2:
