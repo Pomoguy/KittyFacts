@@ -1,19 +1,20 @@
 package com.bpmn2.kittyfacts.delegate;
 
 import com.bpmn2.kittyfacts.model.CatFact;
-import com.bpmn2.kittyfacts.model.KittyFact;
 import com.bpmn2.kittyfacts.service.CatFactNinjaClient;
 import org.camunda.bpm.engine.delegate.BpmnError;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
-import org.camunda.bpm.engine.variable.value.ObjectValue;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.logging.Logger;
 
 
 @Component("getCatFactDelegate")
 public class GetCatFactDelegate implements JavaDelegate {
+
+    private final static Logger LOGGER = Logger.getLogger(GetCatFactDelegate.class.getName());
 
     @Autowired
     CatFactNinjaClient catFactNinjaClient;
@@ -24,12 +25,7 @@ public class GetCatFactDelegate implements JavaDelegate {
     @Override
     public void execute(DelegateExecution delegateExecution) {
         try {
-            ObjectValue objectValue = delegateExecution.getVariableTyped("kittyFact");
-            KittyFact kittyFact = objectValue.getValue(KittyFact.class);
-            kittyFact.setFact(catFactNinjaClient.getCatFact().getFact());
-            delegateExecution.setVariable("kittyFact", kittyFact);
-
-
+            delegateExecution.setVariable("fact", catFactNinjaClient.getCatFact().getFact());
         } catch (Exception exception) {
             throw new BpmnError("badContent", exception.getMessage());
         }
